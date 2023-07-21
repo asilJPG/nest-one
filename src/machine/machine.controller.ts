@@ -1,19 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { MachineService } from './machine.service';
 import { CreateMachineDto } from './dto/create-machine.dto';
 import { UpdateMachineDto } from './dto/update-machine.dto';
+import { Machine } from './model/machine.model';
 
 @Controller('machine')
 export class MachineController {
   constructor(private readonly machineService: MachineService) {}
 
-  @Post()
+  @Post('add')
   create(@Body() createMachineDto: CreateMachineDto) {
     return this.machineService.create(createMachineDto);
   }
 
-  @Get()
-  findAll() {
+  @Get('all')
+  async findAll() {
     return this.machineService.findAll();
   }
 

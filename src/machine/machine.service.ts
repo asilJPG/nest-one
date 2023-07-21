@@ -1,14 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMachineDto } from './dto/create-machine.dto';
 import { UpdateMachineDto } from './dto/update-machine.dto';
+import { Machine } from './model/machine.model';
+import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
 export class MachineService {
+  constructor(@InjectModel(Machine) private machineRepo: typeof Machine) {}
+
   create(createMachineDto: CreateMachineDto) {
     return 'This action adds a new machine';
   }
 
-  findAll() {
+  getAllMachine() {
+    return `This action returns all machine`;
+  }
+  async findAll() {
     return `This action returns all machine`;
   }
 

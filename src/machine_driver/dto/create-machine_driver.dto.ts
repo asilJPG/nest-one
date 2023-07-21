@@ -1,1 +1,4 @@
-export class CreateMachineDriverDto {}
+export class CreateMachineDriverDto {
+  machineId: number;
+  driverId: number;
+}

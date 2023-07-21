@@ -1,13 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { MachineDriverService } from './machine_driver.service';
 import { CreateMachineDriverDto } from './dto/create-machine_driver.dto';
 import { UpdateMachineDriverDto } from './dto/update-machine_driver.dto';
 
-@Controller('machine-driver')
+@Controller('machine_driver')
 export class MachineDriverController {
   constructor(private readonly machineDriverService: MachineDriverService) {}
 
-  @Post()
+  @Post('add')
   create(@Body() createMachineDriverDto: CreateMachineDriverDto) {
     return this.machineDriverService.create(createMachineDriverDto);
   }
@@ -23,7 +31,10 @@ export class MachineDriverController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMachineDriverDto: UpdateMachineDriverDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateMachineDriverDto: UpdateMachineDriverDto,
+  ) {
     return this.machineDriverService.update(+id, updateMachineDriverDto);
   }
 

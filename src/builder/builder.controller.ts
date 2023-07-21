@@ -2,8 +2,6 @@ import { Body, Controller, Post, Get, Param, Delete } from '@nestjs/common';
 import { BuilderService } from './builder.service';
 import { createBuilderDto } from '../builder/dto/create-builder.dto';
 import { Builder } from './models/builder.model';
-import { createCompanyDto } from 'src/company/dto/create-company.dto';
-import { promises } from 'dns';
 
 @Controller('builder')
 export class BuilderController {

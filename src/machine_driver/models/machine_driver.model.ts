@@ -8,13 +8,16 @@ import {
 import { Driver } from 'src/driver/models/driver.model';
 import { Machine } from 'src/machine/model/machine.model';
 
-interface MachineDriverAttr {
-  full_name: string;
-  last_name: string;
+interface MachineDriverCreatorAttr {
+  machineId: number;
+  driverId: number;
 }
 
-@Table({ tableName: 'machine_driver' })
-export class MachineDriver extends Model<MachineDriver, MachineDriverAttr> {
+@Table({ tableName: 'machine_driver', createdAt: false, updatedAt: false })
+export class MachineDriver extends Model<
+  MachineDriver,
+  MachineDriverCreatorAttr
+> {
   @Column({
     type: DataType.INTEGER,
     autoIncrement: true,

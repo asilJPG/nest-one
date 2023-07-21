@@ -7,6 +7,15 @@ import { BuilderModule } from './builder/builder.module';
 import { MachineDriverModule } from './machine_driver/machine_driver.module';
 import { DriverModule } from './driver/driver.module';
 import { MachineModule } from './machine/machine.module';
+// import { RulesModule } from './rules/rules.module';
+// import { RoleModule } from './role/role.module';
+import { RoleModule } from './role/role.module';
+import { Role } from './role/models/role.model';
+import { Driver } from './driver/models/driver.model';
+import { Builder } from './builder/models/builder.model';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { User } from './users/model/user.model';
 
 @Module({
   imports: [
@@ -24,9 +33,12 @@ import { MachineModule } from './machine/machine.module';
     }),
     CompanyModule,
     BuilderModule,
-    DriverModule,
-    MachineDriverModule,
-    MachineModule,
+    // DriverModule,
+    // MachineDriverModule,
+    // MachineModule,
+    // RoleModule,
+    // UsersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
