@@ -1,33 +1,50 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMachineDto } from './dto/create-machine.dto';
-import { UpdateMachineDto } from './dto/update-machine.dto';
-import { Machine } from './model/machine.model';
 import { InjectModel } from '@nestjs/sequelize';
+import { Machine } from './models/machine.model';
+import { CreateMachineDto } from './dto/create-machine';
+import { UpdateMachineDto } from './dto/update-machine';
 
 @Injectable()
 export class MachineService {
   constructor(@InjectModel(Machine) private machineRepo: typeof Machine) {}
 
-  create(createMachineDto: CreateMachineDto) {
-    return 'This action adds a new machine';
+  async createMachine(createMachineDto: CreateMachineDto): Promise<Machine> {
+    const machine = await this.machineRepo.create(createMachineDto);
+    return machine;
   }
 
-  getAllMachine() {
-    return `This action returns all machine`;
-  }
-  async findAll() {
-    return `This action returns all machine`;
+  async getAllMachine(): Promise<Machine[]> {
+    const machine = await this.machineRepo.findAll({ include: { all: true } });
+    return machine;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} machine`;
+  async getMachineById(id: number): Promise<Machine> {
+    try {
+      const found_machine = await this.machineRepo.findOne({
+        where: {
+          id,
+        },
+      });
+      return found_machine;
+    } catch (error) {
+      console.log(`Error while fetching data ${error}`);
+      throw new Error(`${error}`);
+    }
   }
 
-  update(id: number, updateMachineDto: UpdateMachineDto) {
-    return `This action updates a #${id} machine`;
+  async DeleteMachine(id: number) {
+    const deleted = await this.machineRepo.destroy({ where: { id } });
+    return deleted;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} machine`;
+  async UpdateMachine(
+    id: number,
+    updateMachineDto: UpdateMachineDto,
+  ): Promise<Machine> {
+    const machine = await this.machineRepo.update(updateMachineDto, {
+      where: { id },
+      returning: true,
+    });
+    return machine[1][0].dataValues;
   }
 }

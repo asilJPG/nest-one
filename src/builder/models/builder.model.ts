@@ -1,17 +1,18 @@
 import {
-  Table,
-  Model,
+  BelongsTo,
   Column,
   DataType,
   ForeignKey,
+  Model,
+  Table,
 } from 'sequelize-typescript';
-import { Company } from 'src/company/models/company.model';
+import { Company } from '../../company/models/company.model';
 
 interface BuilderAttr {
   full_name: string;
-  birthday: Date;
+  birth_day: Date;
   salary: number;
-  companyId: number;
+  company_id: number;
 }
 
 @Table({ tableName: 'builder' })
@@ -24,24 +25,27 @@ export class Builder extends Model<Builder, BuilderAttr> {
   id: number;
 
   @Column({
-    type: DataType.STRING(100),
+    type: DataType.STRING(50),
+    allowNull: false,
   })
   full_name: string;
 
   @Column({
     type: DataType.DATE,
   })
-  birthday: Date;
+  birth_day: Date;
 
   @Column({
-    type: DataType.DECIMAL,
+    type: DataType.DECIMAL(10, 2),
   })
   salary: number;
 
+  @ForeignKey(() => Company)
   @Column({
     type: DataType.INTEGER,
   })
-  @ForeignKey(() => Company)
-  @Column({ type: DataType.INTEGER, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  companyId: number;
+  company_id: number;
+
+  @BelongsTo(() => Company)
+  company: Company;
 }

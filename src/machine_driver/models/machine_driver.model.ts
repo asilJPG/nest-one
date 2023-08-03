@@ -1,33 +1,36 @@
 import {
-  Table,
   Column,
   DataType,
-  Model,
   ForeignKey,
+  Model,
+  Table,
 } from 'sequelize-typescript';
-import { Driver } from 'src/driver/models/driver.model';
-import { Machine } from 'src/machine/model/machine.model';
+import { Driver } from '../../driver/models/driver.model';
+import { Machine } from '../../machine/models/machine.model';
 
-interface MachineDriverCreatorAttr {
+interface Machine_driverAttr {
   machineId: number;
   driverId: number;
 }
 
-@Table({ tableName: 'machine_driver', createdAt: false, updatedAt: false })
-export class MachineDriver extends Model<
-  MachineDriver,
-  MachineDriverCreatorAttr
-> {
+@Table({ tableName: 'machine_driver' })
+export class Machine_driver extends Model<Machine_driver, Machine_driverAttr> {
   @Column({
     type: DataType.INTEGER,
     autoIncrement: true,
     primaryKey: true,
   })
   id: number;
+
   @ForeignKey(() => Machine)
-  @Column({ type: DataType.INTEGER })
+  @Column({
+    type: DataType.INTEGER,
+  })
   machineId: number;
+
   @ForeignKey(() => Driver)
-  @Column({ type: DataType.INTEGER })
+  @Column({
+    type: DataType.INTEGER,
+  })
   driverId: number;
 }

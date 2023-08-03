@@ -1,23 +1,23 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Post, Body, HttpCode } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { LoginDto } from './dto/login-auth.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('AUTHORIZATION')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @ApiOperation({ summary: 'Registration' })
   @Post('/registration')
-  registration(@Body() CreateUserDto: CreateUserDto) {
-    return this.authService.registration(CreateUserDto);
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.authService.registration(createUserDto);
+  }
+  @ApiOperation({ summary: 'Login' })
+  @HttpCode(200)
+  @Post('/login')
+  login(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto);
   }
 }

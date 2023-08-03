@@ -1,37 +1,118 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/sequelize';
-import { User } from './model/user.model';
-import { RoleService } from 'src/role/role.service';
+import { User } from './models/user.model';
+import { RolesService } from '../roles/roles.service';
+import { AddRoleDto } from './dto/add-role.dto';
+import { ActivateUserDto } from './dto/activate-user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User) private userRepository: typeof User,
-    private readonly roleService: RoleService,
+    private readonly rolesService: RolesService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
-    const newUser = await this.userRepository.create(CreateUserDto);
-    const role = await this.roleService.getRolebyValue('ADMIN');
+    const newUser = await this.userRepository.create(createUserDto);
+    const role = await this.rolesService.getRoleByValue('ADMIN');
     if (!role) {
-      return 'Role not found';
+      throw new BadRequestException(`No existe el rol con valor ADMIN`);
     }
-    await newUser.$set('roles', [role.id]);
-    await newUser.save();
+    // await newUser.$set('roles', [role.id]);
+    // await newUser.save();
     newUser.roles = [role];
 
     return newUser;
   }
-  async getAll() {
-    const roles = await this.userRepository.findAll({ include: { all: true } });
-    return roles;
+
+  async getAllUsers() {
+    const users = await this.userRepository.findAll({ include: { all: true } });
+    return users;
   }
-  async getUserbyEmail(email: string) {
+
+  async getUserByEmail(email: string) {
     const user = await this.userRepository.findOne({
       where: { email },
-      include: { all: true }, // eto vizivaet ostalnie foregn keys tam vidut svazanie
+      include: { all: true },
     });
+    return user;
+  }
+
+  async getOneUser(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      include: { all: true },
+    });
+    return user;
+  }
+
+  async addRole(addRoleDto: AddRoleDto) {
+    const user = await this.userRepository.findByPk(addRoleDto.userId);
+    const role = await this.rolesService.getRoleByValue(addRoleDto.value);
+
+    if (role && user) {
+      await user.$add('roles', role.id);
+      const updatedUser = await this.userRepository.findByPk(
+        addRoleDto.userId,
+        {
+          include: { all: true },
+        },
+      );
+      return updatedUser;
+    }
+    throw new HttpException(
+      'Foydalanuvchi yoki parol topilmadi',
+      HttpStatus.NOT_FOUND,
+    );
+  }
+  async deleteUser(id: number) {
+    const deleted = await this.userRepository.destroy({ where: { id } });
+    return deleted;
+  }
+
+  async removeRole(addRoleDto: AddRoleDto) {
+    const user = await this.userRepository.findByPk(addRoleDto.userId);
+    const role = await this.rolesService.getRoleByValue(addRoleDto.value);
+
+    if (role && user) {
+      await user.$remove('roles', role.id);
+      const updatedUser = await this.userRepository.findByPk(
+        addRoleDto.userId,
+        {
+          include: { all: true },
+        },
+      );
+      return updatedUser;
+    }
+    throw new HttpException(
+      'Foydalanuvchi yoki parol topilmadi',
+      HttpStatus.NOT_FOUND,
+    );
+  }
+
+  async activateUser(activateUserDto: ActivateUserDto) {
+    const user = await this.userRepository.findByPk(activateUserDto.userId);
+    if (!user) {
+      throw new HttpException('Foydalanuvchi topilmadi', HttpStatus.NOT_FOUND);
+    }
+    user.is_active = true;
+    await user.save();
+    return user;
+  }
+
+  async deActivateUser(activateUserDto: ActivateUserDto) {
+    const user = await this.userRepository.findByPk(activateUserDto.userId);
+    if (!user) {
+      throw new HttpException('Foydalanuvchi topilmadi', HttpStatus.NOT_FOUND);
+    }
+    user.is_active = false;
+    await user.save();
+    return user;
   }
 }

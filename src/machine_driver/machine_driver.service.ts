@@ -1,31 +1,62 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMachineDriverDto } from './dto/create-machine_driver.dto';
-import { UpdateMachineDriverDto } from './dto/update-machine_driver.dto';
 import { InjectModel } from '@nestjs/sequelize';
-import { MachineDriver } from './models/machine_driver.model';
+import { Machine_driver } from './models/machine_driver.model';
+import { CreateMachine_driverDto } from './dto/create-machine_driver';
+import { UpdateMachine_driverDto } from './dto/update-machine_driver';
 
 @Injectable()
-export class MachineDriverService {
+export class Machine_driverService {
   constructor(
-    @InjectModel(MachineDriver) private machine_driver: typeof MachineDriver,
+    @InjectModel(Machine_driver)
+    private machine_driverRepo: typeof Machine_driver,
   ) {}
-  create(createMachineDriverDto: CreateMachineDriverDto) {
-    return this.machine_driver.create(createMachineDriverDto);
+
+  async createMachine_driver(
+    createMachine_driverDto: CreateMachine_driverDto,
+  ): Promise<Machine_driver> {
+    const machine_driver = await this.machine_driverRepo.create(
+      createMachine_driverDto,
+    );
+    return machine_driver;
   }
 
-  findAll() {
-    return `This action returns all machineDriver`;
+  async getAllMachine_driver(): Promise<Machine_driver[]> {
+    const machine_driver = await this.machine_driverRepo.findAll({
+      include: { all: true },
+    });
+    return machine_driver;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} machineDriver`;
+  async getMachine_driverById(id: number): Promise<Machine_driver> {
+    try {
+      const found_machine_driver = await this.machine_driverRepo.findOne({
+        where: {
+          id,
+        },
+      });
+      return found_machine_driver;
+    } catch (error) {
+      console.log(`Error while fetching data ${error}`);
+      throw new Error(`${error}`);
+    }
   }
 
-  update(id: number, updateMachineDriverDto: UpdateMachineDriverDto) {
-    return `This action updates a #${id} machineDriver`;
+  async DeleteMachine_driver(id: number) {
+    const deleted = await this.machine_driverRepo.destroy({ where: { id } });
+    return deleted;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} machineDriver`;
+  async UpdateMachine_driver(
+    id: number,
+    updateMachine_driverDto: UpdateMachine_driverDto,
+  ): Promise<Machine_driver> {
+    const machine_driver = await this.machine_driverRepo.update(
+      updateMachine_driverDto,
+      {
+        where: { id },
+        returning: true,
+      },
+    );
+    return machine_driver[1][0].dataValues;
   }
 }

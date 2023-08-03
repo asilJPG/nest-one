@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
-import { MachineDriverService } from './machine_driver.service';
-import { MachineDriverController } from './machine_driver.controller';
+import { Machine_driverController } from './machine_driver.controller';
+import { Machine_driverService } from './machine_driver.service';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { MachineDriver } from './models/machine_driver.model';
-
+import { Machine_driver } from './models/machine_driver.model';
 @Module({
-  imports: [SequelizeModule.forFeature([MachineDriver])],
-  controllers: [MachineDriverController],
-  providers: [MachineDriverService],
+  imports: [SequelizeModule.forFeature([Machine_driver])],
+  controllers: [Machine_driverController],
+  providers: [Machine_driverService],
 })
-export class MachineDriverModule {}
+export class Machine_driverModule {}

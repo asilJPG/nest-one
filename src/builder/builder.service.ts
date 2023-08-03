@@ -1,32 +1,50 @@
 import { Injectable } from '@nestjs/common';
-import { Builder } from './models/builder.model';
-import { createCompanyDto } from 'src/company/dto/create-company.dto';
 import { InjectModel } from '@nestjs/sequelize';
-import { createBuilderDto } from './dto/create-builder.dto';
+import { Builder } from './models/builder.model';
+import { CreateBuilderDto } from './dto/create-builder';
+import { UpdateBuilderDto } from './dto/update-builder';
 
 @Injectable()
 export class BuilderService {
   constructor(@InjectModel(Builder) private builderRepo: typeof Builder) {}
 
-  async createBuilder(createBuilderDto: createBuilderDto): Promise<Builder> {
+  async createBuilder(createBuilderDto: CreateBuilderDto): Promise<Builder> {
     const builder = await this.builderRepo.create(createBuilderDto);
     return builder;
   }
-  async getAllBuilder(): Promise<Builder[]> {
+
+  async getAllBuilders(): Promise<Builder[]> {
     const builders = await this.builderRepo.findAll();
     return builders;
   }
 
   async getBuilderById(id: number): Promise<Builder> {
-    const builder = await this.builderRepo.findOne({ where: { id } });
-    return builder;
+    try {
+      const found_builder = await this.builderRepo.findOne({
+        where: {
+          id,
+        },
+      });
+      return found_builder;
+    } catch (error) {
+      console.log(`Error while fetching data ${error}`);
+      throw new Error(`${error}`);
+    }
   }
 
-  async deleteBuilderById(id: number): Promise<number> {
-    // const company = await this.companyRepo.findByPk(id);
-    const builder = await this.builderRepo.destroy({ where: { id } })[0];
-    console.log(builder);
+  async DeleteBuilder(id: number) {
+    const deleted = await this.builderRepo.destroy({ where: { id } });
+    return deleted;
+  }
 
-    return builder;
+  async UpdateBuilder(
+    id: number,
+    updateBuilderDto: UpdateBuilderDto,
+  ): Promise<Builder> {
+    const builder = await this.builderRepo.update(updateBuilderDto, {
+      where: { id },
+      returning: true,
+    });
+    return builder[1][0].dataValues;
   }
 }

@@ -1,44 +1,55 @@
-import { Body, Controller, Post, Get, Put, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { CompanyService } from './company.service';
-import { createCompanyDto } from './dto/create-company.dto';
+import { CreateCompanyDto } from './dto/create-company.dto';
 import { Company } from './models/company.model';
-import { Param } from '@nestjs/common/decorators';
 import { UpdateCompanyDto } from './dto/update-company.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('COMPANIES')
 @Controller('company')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
-
+  @ApiOperation({ summary: 'Create Company' })
   @Post('create')
-  async createCompany(@Body() createCompanyDto: createCompanyDto) {
-    return this.companyService.createCompany(createCompanyDto);
+  async createCompany(
+    @Body() creaateCompanyDto: CreateCompanyDto,
+  ): Promise<Company> {
+    return await this.companyService.createCompany(creaateCompanyDto);
   }
-
-  @Get('all')
+  @ApiOperation({ summary: 'Get all Companies' })
+  @Get()
   async getAllCompany(): Promise<Company[]> {
     return this.companyService.getAllCompany();
   }
-
-  @Get(':id')
-  async getCompanyById(@Param('id') id: string): Promise<Company> {
-    return this.companyService.getCompanyById(+id);
+  @ApiOperation({ summary: 'Get Company by ID' })
+  @Get('/:id')
+  getCompanyId(@Param('id') id: string) {
+    return this.companyService.getCompanyById(Number(id));
   }
-
-  @Get(':name')
-  async getCompanyByName(@Param('name') name: string): Promise<Company> {
-    return this.companyService.getCompanyByName(name);
+  @ApiOperation({ summary: 'Delete Company' })
+  @Delete('delete/:id')
+  async deleteCompany(@Param('id') id: string) {
+    const result = await this.companyService.DeleteCompany(Number(id));
+    return result;
   }
-
-  @Delete(':id')
-  async deleteCompanyById(@Param('id') id: string): Promise<number> {
-    return this.companyService.deleteCompanyById(+id);
-  }
-
-  @Put(':id')
+  @ApiOperation({ summary: 'Update Company' })
+  @Put('update/:id')
   async updateCompany(
     @Param('id') id: string,
     @Body() updateCompanyDto: UpdateCompanyDto,
   ): Promise<Company> {
-    return this.companyService.updateCompany(+id, updateCompanyDto);
+    const updated = await this.companyService.UpdateCompany(
+      Number(id),
+      updateCompanyDto,
+    );
+    return updated;
   }
 }

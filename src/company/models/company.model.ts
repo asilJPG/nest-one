@@ -1,5 +1,6 @@
-// import {  DataType, Model } from "sequelize"
-import { Table, Column, DataType, Model } from 'sequelize-typescript';
+import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import { Builder } from '../../builder/models/builder.model';
+import { Machine } from '../../machine/models/machine.model';
 
 interface CompanyAttr {
   name: string;
@@ -15,18 +16,26 @@ export class Company extends Model<Company, CompanyAttr> {
     primaryKey: true,
   })
   id: number;
+
   @Column({
-    type: DataType.STRING(100),
+    type: DataType.STRING(50),
     allowNull: false,
-    unique: true,
   })
   name: string;
+
   @Column({
-    type: DataType.STRING,
+    type: DataType.STRING(100),
   })
   address: string;
+
   @Column({
-    type: DataType.STRING,
+    type: DataType.STRING(100),
   })
   phone: string;
+
+  @HasMany(() => Builder)
+  builders: Builder[];
+
+  @HasMany(() => Machine)
+  mmachines: Machine[];
 }

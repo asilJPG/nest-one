@@ -1,44 +1,43 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Company } from './models/company.model';
-import { createCompanyDto } from './dto/create-company.dto';
+import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 
 @Injectable()
 export class CompanyService {
   constructor(@InjectModel(Company) private companyRepo: typeof Company) {}
 
-  async createCompany(createCompanyDto: createCompanyDto): Promise<Company> {
+  async createCompany(createCompanyDto: CreateCompanyDto): Promise<Company> {
     const company = await this.companyRepo.create(createCompanyDto);
     return company;
   }
 
   async getAllCompany(): Promise<Company[]> {
-    const companies = await this.companyRepo.findAll();
-    return companies;
-  }
-
-  async getCompanyByName(name: string): Promise<Company> {
-    // const company = await this.companyRepo.findByPk(id);
-    const company = await this.companyRepo.findOne({ where: { name } });
+    const company = await this.companyRepo.findAll({ include: { all: true } });
     return company;
   }
 
   async getCompanyById(id: number): Promise<Company> {
-    // const company = await this.companyRepo.findByPk(id);
-    const company = await this.companyRepo.findOne({ where: { id } });
-    return company;
+    try {
+      const found_company = await this.companyRepo.findOne({
+        where: {
+          id,
+        },
+      });
+      return found_company;
+    } catch (error) {
+      console.log(`Error while fetching data ${error}`);
+      throw new Error(`${error}`);
+    }
   }
 
-  async deleteCompanyById(id: number): Promise<number> {
-    // const company = await this.companyRepo.findByPk(id);
-    const company = await this.companyRepo.destroy({ where: { id } })[0];
-    console.log(company);
-
-    return company;
+  async DeleteCompany(id: number) {
+    const deleted = await this.companyRepo.destroy({ where: { id } });
+    return deleted;
   }
 
-  async updateCompany(
+  async UpdateCompany(
     id: number,
     updateCompanyDto: UpdateCompanyDto,
   ): Promise<Company> {

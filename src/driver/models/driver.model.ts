@@ -1,16 +1,15 @@
 import {
-  Table,
+  BelongsToMany,
   Column,
   DataType,
   Model,
-  BelongsTo,
-  BelongsToMany,
+  Table,
 } from 'sequelize-typescript';
-import { Machine } from 'src/machine/model/machine.model';
-import { MachineDriver } from 'src/machine_driver/models/machine_driver.model';
+import { Machine } from '../../machine/models/machine.model';
+import { Machine_driver } from '../../machine_driver/models/machine_driver.model';
 
 interface DriverAttr {
-  full_name: string;
+  first_name: string;
   last_name: string;
 }
 
@@ -22,17 +21,17 @@ export class Driver extends Model<Driver, DriverAttr> {
     primaryKey: true,
   })
   id: number;
+
+  @Column({
+    type: DataType.STRING(50),
+  })
+  first_name: string;
+
   @Column({
     type: DataType.STRING(100),
-    allowNull: false,
-    unique: true,
-  })
-  full_name: string;
-  @Column({
-    type: DataType.STRING,
   })
   last_name: string;
 
-  @BelongsToMany(() => Machine, () => MachineDriver)
+  @BelongsToMany(() => Machine, () => Machine_driver)
   machines: Machine[];
 }
